@@ -87,7 +87,7 @@ export default async function handler(req: Request) {
       ${forumSnippets || 'No forum/developer results found.'}
     `;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
     // AI Citation Evaluation Prompt (Strictly forbids em-dashes)
     const prompt = `
