@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 export default async function handler(req: any, res: any) {
   // CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -27,48 +24,40 @@ export default async function handler(req: any, res: any) {
     }
 
     const formattedDomain = domain.startsWith('http') ? domain : `https://${domain}`;
+    const siteUrl = new URL(formattedDomain);
+    if (!['http:', 'https:'].includes(siteUrl.protocol)) {
+      return res.status(400).json({ error: 'Domain must be an HTTP(S) URL.' });
+    }
+
+    const verifiedProfiles = confirmedProfiles.filter((profile: unknown) => {
+      if (typeof profile !== 'string') return false;
+      try {
+        const profileUrl = new URL(profile);
+        return ['http:', 'https:'].includes(profileUrl.protocol);
+      } catch {
+        return false;
+      }
+    });
+
+    if (verifiedProfiles.length === 0) {
+      return res.status(400).json({ error: 'Provide at least one valid social profile URL.' });
+    }
 
     const jsonLd = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       'name': brandName,
       'url': formattedDomain,
-      'sameAs': confirmedProfiles,
+      'sameAs': verifiedProfiles,
     };
 
     const schemaBlock = `<!-- START RANKBEACON SAMEAS SCHEMA -->\n<script type="application/ld+json">\n${JSON.stringify(jsonLd, null, 2)}\n</script>\n<!-- END RANKBEACON SAMEAS SCHEMA -->`;
 
-    // Let's locate the template index.html files in our local workspace to perform real injection
-    const pathsToUpdate = [
-      path.resolve(process.cwd(), 'rankbeacon-moat-hero/index.html'),
-      path.resolve(process.cwd(), 'index.html')
-    ];
-
-    let writeCount = 0;
-
-    for (const filePath of pathsToUpdate) {
-      if (fs.existsSync(filePath)) {
-        let htmlContent = fs.readFileSync(filePath, 'utf8');
-
-        // Clean previous schema blocks if they exist
-        const prevSchemaRegex = /<!-- START RANKBEACON SAMEAS SCHEMA -->[\s\S]*?<!-- END RANKBEACON SAMEAS SCHEMA -->/g;
-        htmlContent = htmlContent.replace(prevSchemaRegex, '');
-
-        // Inject schema before </head>
-        if (htmlContent.includes('</head>')) {
-          htmlContent = htmlContent.replace('</head>', `${schemaBlock}\n</head>`);
-          fs.writeFileSync(filePath, htmlContent, 'utf8');
-          writeCount++;
-        }
-      }
-    }
-
     return res.status(200).json({
       success: true,
-      writeCount,
       schema: jsonLd,
       snippet: schemaBlock,
-      message: `Injected SameAs Organization Schema into ${writeCount} template file(s) in the workspace.`
+      message: 'Copy the generated snippet into your website head before deploying.'
     });
   } catch (error: any) {
     console.error('Schema Injector API failed:', error);
