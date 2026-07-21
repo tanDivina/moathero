@@ -61,7 +61,7 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
           <section className="bg-zinc-900/40 border border-zinc-800/80 rounded-xl p-6 mb-6">
             <h2 className="text-lg font-bold text-[#fdfbf7] mb-3">1. Overview & Commitment</h2>
             <p>
-              At MoatHero, we are committed to protecting your privacy. This Privacy Policy details how we collect, use, and handle your information when you visit our website, register an account, and use our brand alignment audit services. We do not sell your personal or domain analytics data to third parties.
+              At MoatHero, we are committed to protecting your privacy. This Privacy Policy details how we collect, use, and handle your information when you visit our website and use the Build Week demo. We do not sell your personal or domain analytics data to third parties.
             </p>
           </section>
 
@@ -70,31 +70,31 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
             <p>We collect and process the following categories of information:</p>
             <ul className="list-disc pl-5 space-y-2 text-zinc-400">
               <li>
-                <strong className="text-zinc-300">Account Credentials:</strong> Email address, display name, and authentication tokens provided when you register or sign in via Google OAuth or standard email accounts.
+                <strong className="text-zinc-300">Demo Session Details:</strong> The email address you enter is stored locally in your browser to personalize the demo session. The demo access code is not stored and no account is created.
               </li>
               <li>
                 <strong className="text-zinc-300">Workspace Configurations:</strong> Domain names, Domain Ratings (DR), metadata, and custom properties added to your active project workspaces.
               </li>
               <li>
-                <strong className="text-zinc-300">Google API Integration Data:</strong> Access tokens and selected profile paths linked to retrieve your performance statistics.
+                <strong className="text-zinc-300">Audit Inputs:</strong> The domain, brand description, and selected public social-profile URLs that you submit for an audit.
               </li>
             </ul>
           </section>
 
           <section className="space-y-3 bg-[#d4af37]/5 border border-[#d4af37]/10 rounded-xl p-6">
-            <h2 className="text-lg font-bold text-[#d4af37]">3. Google API Data Usage (Search Console & Google Analytics)</h2>
+            <h2 className="text-lg font-bold text-[#d4af37]">3. Demo Data Usage</h2>
             <p>
-              MoatHero integrates with Google APIs to retrieve search and analytics metrics. Please note:
+              The Build Week demo does not ask you to connect a Google account or Google Search Console. Audit results are generated from public web signals and the inputs you provide.
             </p>
             <ul className="list-disc pl-5 space-y-2 text-zinc-400">
               <li>
-                <strong className="text-[#fdfbf7]">Scopes Requested:</strong> We request access to <code>webmasters.readonly</code> (Google Search Console).
+                <strong className="text-[#fdfbf7]">No Google OAuth:</strong> The demo does not request Google account permissions or collect Google access tokens.
               </li>
               <li>
-                <strong className="text-[#fdfbf7]">Direct Client-Side Queries:</strong> Your GSC queries are executed directly client-side in your web browser utilizing secure, locally cached OAuth tokens.
+                <strong className="text-[#fdfbf7]">Audit Processing:</strong> Submitted audit inputs are sent to MoatHero's serverless audit endpoints to generate the displayed analysis.
               </li>
               <li>
-                <strong className="text-[#fdfbf7]">No Third-Party Transmission:</strong> Google Search Console search analytics metrics are <strong>never stored, logged, or processed</strong> on MoatHero's backend servers. They remain entirely in your browser window and are discarded upon session close or disconnect.
+                <strong className="text-[#fdfbf7]">Browser-Local Baselines:</strong> Consensus baselines are saved in your browser so you can compare a later audit in the same browser.
               </li>
             </ul>
           </section>
@@ -102,21 +102,21 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#fdfbf7]">4. Storage and Security</h2>
             <p>
-              We prioritize data security. Authentication details, custom project configurations, and metadata are securely stored using Firebase Authentication and Cloud Firestore databases. Payment processing tokens and billing configurations are managed securely via Stripe, and no credit card details are ever held or accessed by our servers.
+              The Build Week demo does not process payments or create hosted user accounts. Demo-session and baseline data are stored locally in the browser and can be removed by clearing site data.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#fdfbf7]">5. Cookies & Local Storage</h2>
             <p>
-              MoatHero uses local browser storage (<code>localStorage</code>) to maintain session continuity, preserve selected project contexts, and cache active access tokens for GSC querying. You can clear this cache at any time by selecting "Disconnect" inside the dashboard or by clearing your browser cache data.
+              MoatHero uses local browser storage (<code>localStorage</code>) to maintain demo-session continuity and preserve browser-local baseline scores. You can clear this data at any time by clearing site data in your browser.
             </p>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#fdfbf7]">6. Third-Party Disclosures</h2>
             <p>
-              We disclose collected configuration details only to service providers that facilitate operations (Firebase, Stripe, Vercel Analytics). We do not share Google API details, search data, or project keywords with advertising companies.
+              We use Vercel to host the demo and Gemini to generate AI audit analysis. We do not share audit inputs with advertising companies.
             </p>
           </section>
 

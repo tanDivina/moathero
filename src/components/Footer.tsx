@@ -19,7 +19,7 @@ export default function Footer({ hideCTA = false }: FooterProps) {
               Defend Your Brand Moat <br/> & Ensure Semantic Consistency.
             </h2>
             <p className="text-lg md:text-xl text-zinc-400 mb-12 leading-relaxed max-w-2xl mx-auto">
-              Scan your digital properties to detect brand alignment gaps, social profile mismatches, and structural schema issues before AI engines get confused.
+              Scan your digital properties to detect brand alignment gaps, social profile mismatches, and generate sameAs JSON-LD schema recommendations before AI engines get confused.
             </p>
             
             {/* Two-button layout */}

@@ -6,8 +6,6 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import LandingPage from './components/LandingPage';
-import { auth, db } from './firebase';
-import { doc, setDoc } from 'firebase/firestore';
 import { getSharedCookie } from './utils/cookies';
 
 export default function App() {
@@ -74,16 +72,6 @@ export default function App() {
       const token = params.get('access_token');
       if (token) {
         localStorage.setItem('gsc_access_token', token);
-        
-        // Save connection state in Firestore if logged in
-        const user = auth.currentUser;
-        if (user) {
-          try {
-            setDoc(doc(db, 'users', user.uid), { gscConnected: true }, { merge: true });
-          } catch (err) {
-            console.error('Error updating firestore on GSC connect intercept:', err);
-          }
-        }
         
         // Redirect to / while cleanly dropping hash parameters from the address bar
         window.history.replaceState({}, document.title, '/');

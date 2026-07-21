@@ -4,8 +4,6 @@ import {
   CheckCircle2, Compass, AlertTriangle, Zap, MessageSquare, ExternalLink, Globe,
   ChevronDown, ChevronUp, Layers
 } from 'lucide-react';
-import { db } from '../firebase';
-import { collection, query, getDocs, limit, orderBy } from 'firebase/firestore';
 
 // Viewport-Entrance Scroll Reveals React Wrapper (Spring Overshoot Physics)
 interface ScrollRevealProps {
@@ -73,7 +71,6 @@ interface LandingPageProps {
 }
 
 export default function LandingPage({ onTriggerSignup, onTriggerLogin }: LandingPageProps) {
-  const [publicStudies, setPublicStudies] = useState<any[]>([]);
   const [openFaqs, setOpenFaqs] = useState<Record<number, boolean>>({});
 
   const toggleFaq = (idx: number) => {
@@ -106,29 +103,6 @@ export default function LandingPage({ onTriggerSignup, onTriggerLogin }: Landing
     }
   ];
 
-  useEffect(() => {
-    const fetchPublicStudies = async () => {
-      try {
-        const q = query(
-          collection(db, 'public_case_studies'),
-          orderBy('publishedAt', 'desc'),
-          limit(5)
-        );
-        const snapshot = await getDocs(q);
-        const list: any[] = [];
-        snapshot.forEach(docSnap => {
-          list.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        setPublicStudies(list);
-      } catch (err) {
-        console.error('Error fetching public case studies:', err);
-      }
-    };
-    fetchPublicStudies();
-  }, []);
-
-
-
   const fallbackStudies = [
     {
       id: 'mock-1',
@@ -159,7 +133,7 @@ export default function LandingPage({ onTriggerSignup, onTriggerLogin }: Landing
     }
   ];
 
-  const caseStudiesToRender = publicStudies.length > 0 ? publicStudies : fallbackStudies;
+  const caseStudiesToRender = fallbackStudies;
 
   return (
     <div className="bg-[#050507] text-[#fdfbf7] min-h-screen font-sans selection:bg-[#d4af37]/30 selection:text-white overflow-x-hidden relative">
@@ -469,18 +443,18 @@ export default function LandingPage({ onTriggerSignup, onTriggerLogin }: Landing
         </div>
       </section>
 
-      {/* Real-Time Social Proof Case Studies */}
+      {/* Illustrative telemetry examples */}
       <section className="py-24 bg-gradient-to-b from-[#08080a] to-[#050507] border-b border-zinc-900/40 relative">
         <div className="max-w-5xl mx-auto px-6 relative z-10">
           <ScrollReveal>
             <div className="text-center space-y-4 mb-16">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d4af37]/5 border-gradient-gilt text-[10px] font-mono font-semibold tracking-widest text-[#d4af37] uppercase">
                 <Globe className="h-3 w-3 animate-spin text-[#d4af37]" style={{ animationDuration: '6s' }} />
-                Live Impact Telemetry
+                Moat Telemetry Examples
               </div>
-              <h2 className="text-3xl font-extrabold tracking-tight">Verified Ranking Jumps</h2>
+              <h2 className="text-3xl font-extrabold tracking-tight">Example Ranking Movement</h2>
               <p className="text-sm text-zinc-400 max-w-lg mx-auto">
-                Real-time before-and-after metrics published by site owners using MoatHero.
+                Illustrative before-and-after metrics showing the signals MoatHero tracks after an audit.
               </p>
             </div>
           </ScrollReveal>
@@ -536,7 +510,7 @@ export default function LandingPage({ onTriggerSignup, onTriggerLogin }: Landing
         </div>
       </section>
 
-      {/* Pricing / CTA Section */}
+      {/* Demo CTA Section */}
       <section className="py-24 bg-[#050507]">
         <ScrollReveal>
           <div className="max-w-xl mx-auto px-6 text-center space-y-8">
@@ -545,22 +519,22 @@ export default function LandingPage({ onTriggerSignup, onTriggerLogin }: Landing
               Take control of your digital footprint. Ensure your messaging is semantically consistent so LLMs cite you correctly.
             </p>
 
-            {/* Glowing Double Bezel Pricing Container */}
+            {/* Glowing Double Bezel Demo Container */}
             <div className="bg-white/[0.015] border-gradient-gilt p-1.5 rounded-[2.5rem] shadow-2xl relative overflow-hidden max-w-md mx-auto">
               <div className="bg-[#0c0c0f]/95 rounded-[calc(2.5rem-0.375rem)] p-8 space-y-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] relative overflow-hidden text-center">
                 <div className="absolute top-0 right-0 bg-gradient-to-bl from-[#d4af37]/10 to-transparent h-32 w-32 rounded-full blur-2xl pointer-events-none" />
                 
-                <p className="text-xs font-mono text-[#d4af37] uppercase tracking-[0.25em] font-bold">Launch Special Offer</p>
+                <p className="text-xs font-mono text-[#d4af37] uppercase tracking-[0.25em] font-bold">Build Week Demo</p>
                 <div className="space-y-2">
-                  <h3 className="text-4xl font-extrabold font-mono text-white">$19<span className="text-sm text-zinc-500 font-normal tracking-wide">/month</span></h3>
-                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto leading-relaxed">Unlocks all features, Google Search Console integration, and unlimited AI semantic audits.</p>
+                  <h3 className="text-2xl font-extrabold text-white">Audit your AI search presence</h3>
+                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto leading-relaxed">Explore brand consensus, citation signals, social alignment, and JSON-LD schema recommendations.</p>
                 </div>
 
                 <button
                   onClick={onTriggerSignup}
                   className="w-full group relative flex items-center justify-between pl-6 pr-2 py-2.5 bg-gradient-to-r from-[#b87333] to-[#d4af37] hover:from-[#c98444] hover:to-[#e5c048] text-black font-bold text-sm rounded-full overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] shadow-lg shadow-[#d4af37]/5"
                 >
-                  <span className="tracking-wide">Get Started with MoatHero</span>
+                  <span className="tracking-wide">Open MoatHero Demo</span>
                   <div className="w-9 h-9 rounded-full bg-black/10 flex items-center justify-center ml-4 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:bg-black/20 group-hover:scale-105">
                     <ArrowRight className="h-4 w-4 text-black stroke-[2.5]" />
                   </div>

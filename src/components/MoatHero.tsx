@@ -1,38 +1,41 @@
-import React, { useState } from 'react';
-import { auth, db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import {Search, Sparkles, Shield, BarChart2, CheckCircle2, AlertCircle, Link2, ArrowRight, ShieldCheck, HelpCircle, MessageSquare, Copy, Users, BrainCircuit, Activity, Globe, Send, ExternalLink, ShieldAlert, X} from 'lucide-react';
 
 export default function MoatHero() {
   const [baselineScore, setBaselineScore] = useState<number | null>(null);
   const [showCaseStudyModal, setShowCaseStudyModal] = useState(false);
-  
-  const lockBaselineScore = async () => {
-    const score = auditResults ? auditResults.consensusIndex : 45;
-    setBaselineScore(score);
-    const userId = auth.currentUser?.uid || 'anonymous_user';
-    try {
-      await addDoc(collection(db, 'users', userId, 'snapshots'), {
-        tool: 'MoatHero',
-        metrics: {
-          baselineScore: score
-        },
-        createdAt: serverTimestamp()
-      });
-      alert(`Baseline snapshot (${score}% Consensus Index) successfully saved to Firebase Firestore! Optimize your brand footprint and re-audit to observe live authority growth.`);
-    } catch (e) {
-      console.error('Error writing to Firestore:', e);
-    }
-  };
-
   const [domain, setDomain] = useState('rankbeacon.dev');
-  const [brandDescription, setBrandDescription] = useState('Artisanal bakery in Panama City specializing in sourdough bread, pastries, and organic coffee.');
+  const [brandDescription, setBrandDescription] = useState('RankBeacon helps growth teams measure search visibility, identify technical SEO gaps, and improve their presence across AI-assisted search results.');
   const [isAuditing, setIsAuditing] = useState(false);
   const [auditResults, setAuditResults] = useState<any>(null);
   const [socialAudit, setSocialAudit] = useState<any>(null);
   const [selectedSocials, setSelectedSocials] = useState<string[]>([]);
   const [isInjectingSchema, setIsInjectingSchema] = useState(false);
   const [pitchText, setPitchText] = useState<string | null>(null);
+
+  const baselineStorageKey = `moathero_baseline_${domain.trim().toLowerCase()}`;
+
+  useEffect(() => {
+    try {
+      const storedSnapshot = localStorage.getItem(baselineStorageKey);
+      const parsedSnapshot = storedSnapshot ? JSON.parse(storedSnapshot) : null;
+      setBaselineScore(typeof parsedSnapshot?.score === 'number' ? parsedSnapshot.score : null);
+    } catch {
+      setBaselineScore(null);
+    }
+  }, [baselineStorageKey]);
+
+  const lockBaselineScore = () => {
+    if (!auditResults) {
+      alert('Run an audit before locking a Consensus Index baseline.');
+      return;
+    }
+
+    const score = auditResults.consensusIndex;
+    localStorage.setItem(baselineStorageKey, JSON.stringify({ score, capturedAt: new Date().toISOString() }));
+    setBaselineScore(score);
+    alert(`Baseline snapshot (${score}% Consensus Index) saved in this browser. Re-audit to measure the delta.`);
+  };
 
   const handleToggleSocial = (url: string) => {
     setSelectedSocials(prev => 
@@ -60,7 +63,8 @@ export default function MoatHero() {
       });
       const data = await res.json();
       if (data.success) {
-        alert(`Successfully injected sameAs social entity schema to ${data.writeCount} project index templates!`);
+        await navigator.clipboard.writeText(data.snippet);
+        alert('Your sameAs schema has been copied. Paste it inside your site\'s <head> element before deploying.');
       } else {
         alert('Failed to inject schema.');
       }
@@ -256,7 +260,7 @@ export default function MoatHero() {
                         <span>{auditResults.citationDensity}%</span>
                       </div>
                       <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#d4af37] h-full" style={{ width: `\${auditResults.citationDensity}%` }} />
+                        <div className="bg-[#d4af37] h-full" style={{ width: `${auditResults.citationDensity}%` }} />
                       </div>
                     </div>
 
@@ -266,7 +270,7 @@ export default function MoatHero() {
                         <span>{auditResults.authorAttribution}%</span>
                       </div>
                       <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#b87333] h-full" style={{ width: `\${auditResults.authorAttribution}%` }} />
+                        <div className="bg-[#b87333] h-full" style={{ width: `${auditResults.authorAttribution}%` }} />
                       </div>
                     </div>
 
@@ -276,7 +280,7 @@ export default function MoatHero() {
                         <span>{auditResults.forumMentions}%</span>
                       </div>
                       <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#d4af37] h-full" style={{ width: `\${auditResults.forumMentions}%` }} />
+                        <div className="bg-[#d4af37] h-full" style={{ width: `${auditResults.forumMentions}%` }} />
                       </div>
                     </div>
                   </div>
@@ -455,7 +459,7 @@ export default function MoatHero() {
                             </div>
                           </label>
                           <div className="flex items-center gap-2">
-                            <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full border uppercase tracking-wider font-bold \${
+                            <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full border uppercase tracking-wider font-bold ${
                               prof.exists 
                                 ? 'bg-emerald-500/5 text-emerald-400 border-emerald-500/20' 
                                 : 'bg-amber-500/5 text-amber-400 border-amber-500/20'
@@ -517,17 +521,17 @@ export default function MoatHero() {
                               <div className="space-y-1.5">
                                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider font-bold block">Topical Alignment</span>
                                 <div className="flex items-center gap-2">
-                                  <span className={`text-xs font-mono font-bold \${
+                                  <span className={`text-xs font-mono font-bold ${
                                     prof.topicalScore >= 70 ? 'text-emerald-400' : prof.topicalScore >= 40 ? 'text-amber-400' : 'text-rose-400'
                                   }`}>
                                     {prof.topicalScore}%
                                   </span>
                                   <div className="w-24 h-1.5 rounded-full bg-zinc-900 overflow-hidden">
                                     <div 
-                                      className={`h-full \${
+                                      className={`h-full ${
                                         prof.topicalScore >= 70 ? 'bg-emerald-500' : prof.topicalScore >= 40 ? 'bg-amber-500' : 'bg-rose-500'
                                       }`} 
-                                      style={{ width: `\${prof.topicalScore}%` }}
+                                      style={{ width: `${prof.topicalScore}%` }}
                                     ></div>
                                   </div>
                                 </div>
@@ -606,7 +610,7 @@ export default function MoatHero() {
                         className="group w-full py-2.5 bg-gradient-to-r from-[#b87333] to-[#d4af37] text-black font-bold text-xs rounded-lg transition-all flex items-center justify-center gap-2"
                       >
                         <Sparkles className="w-4 h-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 text-zinc-950" />
-                        <span>{isInjectingSchema ? 'Injecting Schema...' : 'Apply & Save Locally (Our Dev Workspace)'}</span>
+                        <span>{isInjectingSchema ? 'Generating schema...' : 'Generate & Copy Schema'}</span>
                         {!isInjectingSchema && <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />}
                       </button>
                     </div>

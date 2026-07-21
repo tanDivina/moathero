@@ -6,6 +6,27 @@ export const config = {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+const isRetryableGeminiError = (error: unknown) =>
+  /\b(429|503)\b|high demand|service unavailable|temporarily unavailable/i.test(
+    error instanceof Error ? error.message : String(error)
+  );
+
+async function generateWithRetry(model: any, prompt: string) {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await model.generateContent(prompt);
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableGeminiError(error) || attempt === 2) break;
+      await new Promise((resolve) => setTimeout(resolve, 400 * 2 ** attempt));
+    }
+  }
+
+  throw lastError;
+}
+
 export default async function handler(req: Request) {
   if (req.method === 'OPTIONS') {
     return new Response(null, {
@@ -50,7 +71,7 @@ export default async function handler(req: Request) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
     // AI Semantic Audit Prompt (Strictly forbids em-dashes in instructions and outputs)
     const prompt = `
@@ -96,7 +117,7 @@ export default async function handler(req: Request) {
       \`\`\`
     `;
 
-    const result = await model.generateContent(prompt);
+    const result = await generateWithRetry(model, prompt);
     const responseText = result.response.text();
     
     // Extract JSON block safely
@@ -134,8 +155,14 @@ export default async function handler(req: Request) {
     });
   } catch (error: any) {
     console.error('AI Alignment Audit API failed:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Internal server error' }), {
-      status: 500,
+    const retryable = isRetryableGeminiError(error);
+    return new Response(JSON.stringify({
+      error: retryable
+        ? 'Gemini is temporarily busy. Please retry the audit in a moment.'
+        : error.message || 'Internal server error',
+      retryable,
+    }), {
+      status: retryable ? 503 : 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     });
   }
